@@ -1,4 +1,4 @@
-import { maintenanceZh } from './maintenance.ts';
+import maintenanceZh from './maintenance/zh-CN.js';
 
 export default {
   ...maintenanceZh,
@@ -17,8 +17,7 @@ export default {
   'profile.sendMessage': '发送消息',
   'profile.openFailed': '无法打开会话，请重试',
   'app.description': 'Edgechat 团队沟通与协作空间',
-  'language.switchToEnglish': '切换为英语',
-  'language.switchToChinese': '切换为中文',
+  'language.select': '选择语言',
   'common.cancel': '取消',
   'common.retry': '重试',
   'common.close': '关闭',
@@ -45,6 +44,7 @@ export default {
   'common.active': '正常',
   'common.paused': '暂停',
   'common.select': '请选择',
+  'common.requestFailed': '请求失败',
   'auth.welcomeBack': '欢迎回来',
   'auth.registerSuccess': '注册成功，现在可以使用新账号登录。',
 	  'auth.account': '账号',
@@ -298,6 +298,7 @@ export default {
   'admin.sidebar.navigation': '后台导航',
   'admin.sidebar.noResults': '没有匹配的后台页面',
   'admin.sidebar.superAdmin': '超级管理员',
+  'admin.sidebar.administrator': '管理员',
   'admin.topbar.defaultTitle': '管理后台',
   'admin.topbar.settings': '设置',
   'dashboard.metrics.users': '用户',

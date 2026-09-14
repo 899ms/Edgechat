@@ -49,7 +49,7 @@ const emit = defineEmits(['close', 'update:inviteUserId', 'invite', 'remove-memb
       </div>
 
       <div class="chat-member-panel__actions">
-        <UiBadge variant="secondary">{{ room.myRole || 'member' }}</UiBadge>
+        <UiBadge variant="secondary">{{ room.myRole === 'owner' ? t('members.owner') : t('members.member') }}</UiBadge>
         <UiButton v-if="canManage && !room.isGeneral" variant="destructive" size="sm" @click="emit('delete-group')">
           {{ t('group.delete') }}
         </UiButton>

@@ -1,4 +1,4 @@
-import { maintenanceEn } from './maintenance.ts';
+import maintenanceEn from './maintenance/en-US.js';
 
 export default {
   ...maintenanceEn,
@@ -17,8 +17,7 @@ export default {
   'profile.sendMessage': 'Send message',
   'profile.openFailed': 'Unable to open the conversation. Please retry.',
   'app.description': 'Edgechat team communication and collaboration space',
-  'language.switchToEnglish': 'Switch to English',
-  'language.switchToChinese': 'Switch to Chinese',
+  'language.select': 'Select language',
   'common.cancel': 'Cancel',
   'common.retry': 'Retry',
   'common.close': 'Close',
@@ -45,6 +44,7 @@ export default {
   'common.active': 'Active',
   'common.paused': 'Paused',
   'common.select': 'Select',
+  'common.requestFailed': 'Request failed',
   'auth.welcomeBack': 'Welcome Back',
   'auth.registerSuccess': 'Registration successful. You can now sign in.',
 	  'auth.account': 'Username',
@@ -298,6 +298,7 @@ export default {
   'admin.sidebar.navigation': 'Admin navigation',
   'admin.sidebar.noResults': 'No matching admin pages',
   'admin.sidebar.superAdmin': 'Super administrator',
+  'admin.sidebar.administrator': 'Administrator',
   'admin.topbar.defaultTitle': 'Admin',
   'admin.topbar.settings': 'Settings',
   'dashboard.metrics.users': 'Users',
@@ -481,3 +482,5 @@ export default {
   'demo.reset': 'Reset demo data',
   'demo.buildMessage': 'Frontend-only demo build'
 };
+
+export { localizeServerError } from './server-errors/en-US.js';

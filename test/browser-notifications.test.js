@@ -7,8 +7,8 @@ import {
 } from "../frontend/src/composables/useBrowserNotifications.js";
 import { CHINESE_LOCALE, setLocale } from "../frontend/src/i18n.js";
 
-beforeEach(() => {
-	setLocale(CHINESE_LOCALE);
+beforeEach(async () => {
+	await setLocale(CHINESE_LOCALE);
 });
 
 function createStorage() {
