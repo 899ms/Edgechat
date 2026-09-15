@@ -11,6 +11,7 @@ import {
 } from '../message-pinning.js';
 import { submitExternalMessage } from '../external-message-submission.js';
 import { forwardEdgeChatMessageToTelegram } from '../integrations/telegram/bridge.js';
+import { isGroupChannelKind } from '../../../shared/group-channel.ts';
 import { authorizeRoom } from '../room-access.js';
 import { validateSession } from '../session.js';
 import { projectUnreadMessage } from '../unread-projection.js';
@@ -178,7 +179,7 @@ export class ChannelRoom {
 
     const payload = await request.json();
     const room = payload.room;
-    if (room?.kind !== 'public' || !Number.isInteger(Number(room.id))) {
+    if (!isGroupChannelKind(room?.kind) || !Number.isInteger(Number(room.id))) {
       return new Response('Invalid room', { status: 400 });
     }
 

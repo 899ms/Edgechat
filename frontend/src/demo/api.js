@@ -13,6 +13,7 @@ import {
 } from './state.js';
 
 import { demoMaintenanceReport } from './maintenance.ts';
+import { isGroupChannelKind } from '../../../shared/group-channel.ts';
 import { parseLocalUserId, validateBio } from '../../../shared/user-profile.ts';
 
 const DEMO_DELAY_MS = 90;
@@ -75,8 +76,8 @@ function telegramPayload() {
   return cloneDemo({
     config: demoState.telegram.config,
     channels: demoState.channels
-      .filter((channel) => channel.kind === 'public')
-      .map(({ id, name }) => ({ id, name })),
+      .filter((channel) => isGroupChannelKind(channel.kind))
+      .map(({ id, name, kind }) => ({ id, name, kind })),
     mappings: demoState.telegram.mappings
   });
 }
@@ -498,11 +499,14 @@ export async function requestDemo(path, options = {}) {
   }
   if (method === 'POST' && pathname === '/admin/telegram/mappings') {
     const channel = findDemoChannel(body.channelId);
-    if (!channel) fail('请选择公开群组');
+    if (!channel || !isGroupChannelKind(channel.kind) || !/^-\d+$/.test(String(body.telegramChatId || ''))) {
+      fail('请选择群组并填写有效的 Telegram 群 ID');
+    }
     demoState.telegram.mappings.push({
       id: demoState.nextMappingId++,
       channelId: channel.id,
       channelName: channel.name,
+      channelKind: channel.kind,
       telegramChatTitle: 'Telegram 演示群',
       telegramChatId: String(body.telegramChatId || ''),
       enabled: true

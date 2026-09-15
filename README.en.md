@@ -90,7 +90,7 @@ The project itself is free and open source. Cloud service costs depend on your C
 
 **You do not have to move everyone into the same application.**
 
-Administrators can bind EdgeChat groups to Telegram groups and relay messages in both directions through a Telegram Bot: messages sent on the web can be synchronized to Telegram, and messages in the Telegram group return to EdgeChat.
+Administrators can view both public and private EdgeChat groups in the admin console and bind any group to a Telegram group. A Telegram Bot relays messages in both directions: messages sent on the web can be synchronized to Telegram, and messages in the Telegram group return to EdgeChat. One-to-one direct messages are never bridged.
 
 This suits teams and communities that already have Telegram groups but also need an independent web chat entry point.
 
@@ -129,7 +129,7 @@ This suits teams and communities that already have Telegram groups but also need
 
 ### 🔌 Connections and Extensions
 
-- Two-way Telegram group message bridging, including voice message synchronization.
+- Administrator-configured two-way Telegram bridging for public and private groups, including voice message synchronization.
 - WebMCP site tools: in compatible client environments, provides login, conversation queries, message reading, sending, and related capabilities.
 
 ## Privacy and Encryption
