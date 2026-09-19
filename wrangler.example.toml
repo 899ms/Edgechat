@@ -73,5 +73,5 @@ not_found_handling = "single-page-application"
 run_worker_first = ["/api/*", "/files/*"]
 
 [triggers]
-# Cloudflare Cron 按 UTC 执行；19:00 UTC = 北京时间每天 03:00
-crons = ["0 19 * * *", "*/15 * * * *"]
+# 单一 15 分钟触发器救援实例桥接；Worker 在 UTC 19:00 的轮次同时执行每日 GC，节省账户级 cron 配额。
+crons = ["*/15 * * * *"]

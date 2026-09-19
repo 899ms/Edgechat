@@ -340,11 +340,14 @@ app.onError((error, c) => {
 export default {
   fetch: app.fetch,
   async scheduled(controller, env, ctx) {
-    if (controller.cron === '*/15 * * * *') {
-      ctx.waitUntil(rescueBridgeDeliveries(env));
-    } else {
-      ctx.waitUntil(Promise.all([runScheduledGc(env), rescueBridgeDeliveries(env)]));
-    }
+    const tasks = [rescueBridgeDeliveries(env)];
+    // 免费账户的 cron 数量是账户级上限；复用 15 分钟触发器，在 UTC 19:00 的轮次追加每日 GC。
+    if (shouldRunDailyGc(controller.scheduledTime)) tasks.push(runScheduledGc(env));
+    ctx.waitUntil(Promise.all(tasks));
   }
 };
+export function shouldRunDailyGc(scheduledTime) {
+  const time = new Date(scheduledTime);
+  return time.getUTCHours() === 19 && time.getUTCMinutes() === 0;
+}
 export { ChannelRoom, Scheduler, UserInbox, InstanceBridge };
