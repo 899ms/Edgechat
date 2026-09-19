@@ -13,6 +13,7 @@ import {
 } from './state.js';
 
 import { demoMaintenanceReport } from './maintenance.ts';
+import { demoInstanceBridge } from './instance-bridge.js';
 import { isGroupChannelKind } from '../../../shared/group-channel.ts';
 import { parseLocalUserId, validateBio } from '../../../shared/user-profile.ts';
 
@@ -237,6 +238,10 @@ export async function requestDemo(path, options = {}) {
   const url = new URL(path, 'https://edgechat.demo');
   const pathname = url.pathname;
   const body = parseBody(options);
+  if (pathname.includes('/instance-bridge')) {
+    const result = demoInstanceBridge(pathname, method, body);
+    if (result) return result;
+  }
 
   if (method === 'GET' && pathname === '/site') {
     return { site: cloneDemo(demoState.site) };

@@ -1,6 +1,8 @@
 import maintenanceZh from './maintenance/zh-CN.js';
+import bridge from './instance-bridge/zh-CN.js';
 
 export default {
+  ...bridge,
   ...maintenanceZh,
   'profile.title': '用户资料',
   'profile.view': '查看 {name} 的资料',

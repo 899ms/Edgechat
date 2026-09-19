@@ -1,4 +1,8 @@
+import bridge from './instance-bridge/zh-TW.js';
 export default {
+  ...bridge,
+  "maintenance.instanceBridge": "InstanceBridge DO",
+  "maintenance.method.instanceBridge": "INSTANCE_BRIDGE binding + 內部 health 請求",
   "admin.nav.maintenance": "安裝與維護",
   "admin.nav.maintenanceDescription": "檢查實例依賴、數據庫結構與部署版本",
   "maintenance.description": "確認這次部署是否就緒。只讀檢查，不修改數據或觸發清理。",

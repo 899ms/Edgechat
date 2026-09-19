@@ -2,7 +2,7 @@
 name = "cfchat"
 main = "worker/src/index.js"
 compatibility_date = "2026-04-05"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
 [build]
 command = "npm run schema:generate"
@@ -59,6 +59,14 @@ new_sqlite_classes = ["ChannelRoom", "Scheduler"]
 tag = "v2"
 new_sqlite_classes = ["UserInbox"]
 
+[[durable_objects.bindings]]
+name = "INSTANCE_BRIDGE"
+class_name = "InstanceBridge"
+
+[[migrations]]
+tag = "v3"
+new_sqlite_classes = ["InstanceBridge"]
+
 [assets]
 directory = "./frontend/dist"
 not_found_handling = "single-page-application"
@@ -66,4 +74,4 @@ run_worker_first = ["/api/*", "/files/*"]
 
 [triggers]
 # Cloudflare Cron 按 UTC 执行；19:00 UTC = 北京时间每天 03:00
-crons = ["0 19 * * *"]
+crons = ["0 19 * * *", "*/15 * * * *"]

@@ -21,6 +21,9 @@ import { ApiError } from './errors.js';
 import { adminMiddleware, authMiddleware } from './middleware.js';
 import { registerAdminRoutes } from './api/admin.js';
 import { registerMaintenanceRoutes } from './api/maintenance.ts';
+import { registerInstanceBridgePublicRoutes, registerInstanceBridgeRoutes } from './api/instance-bridge.ts';
+import { InstanceBridge } from './do/InstanceBridge.ts';
+import { rescueBridgeDeliveries } from './integrations/instance-bridge/delivery.ts';
 import { registerChannelRoutes } from './api/channels.js';
 import { registerContactRoutes } from './api/contacts.ts';
 import { registerDmRoutes } from './api/dm.js';
@@ -76,6 +79,7 @@ app.get('/api/site', async (c) => {
 });
 
 registerTelegramPublicRoutes(app);
+registerInstanceBridgePublicRoutes(app);
 
 app.get('/api/register-links/:token', async (c) => {
   const token = String(c.req.param('token') || '').trim();
@@ -283,6 +287,7 @@ registerChannelRoutes(app);
 registerAdminRoutes(app);
 registerMaintenanceRoutes(app);
 registerTelegramAdminRoutes(app);
+registerInstanceBridgeRoutes(app);
 
 app.get('/api/ws/:kind/:id', async (c) => {
   const session = c.get('session');
@@ -334,8 +339,12 @@ app.onError((error, c) => {
 
 export default {
   fetch: app.fetch,
-  async scheduled(_controller, env, ctx) {
-    ctx.waitUntil(runScheduledGc(env));
+  async scheduled(controller, env, ctx) {
+    if (controller.cron === '*/15 * * * *') {
+      ctx.waitUntil(rescueBridgeDeliveries(env));
+    } else {
+      ctx.waitUntil(Promise.all([runScheduledGc(env), rescueBridgeDeliveries(env)]));
+    }
   }
 };
-export { ChannelRoom, Scheduler, UserInbox };
+export { ChannelRoom, Scheduler, UserInbox, InstanceBridge };

@@ -1,6 +1,8 @@
 import maintenanceEn from './maintenance/en-US.js';
+import bridge from './instance-bridge/en-US.js';
 
 export default {
+  ...bridge,
   ...maintenanceEn,
   'profile.title': 'User profile',
   'profile.view': 'View {name}’s profile',
