@@ -31,6 +31,16 @@ if ('serviceWorker' in navigator && !isCapacitorNative) {
       // 注册失败不影响应用功能，忽略即可。
     });
   });
+
+  // 系统通知（Service Worker 弹出）被点击时，打开对应会话。
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    const payload = event.data;
+    if (payload?.type !== 'edgechat:notification-click') return;
+    const kind = payload.data?.roomKind;
+    const id = Number(payload.data?.roomId);
+    if (!kind || !Number.isFinite(id)) return;
+    queueNativeRoomTarget({ kind, id });
+  });
 }
 
 // 应用自定义背景

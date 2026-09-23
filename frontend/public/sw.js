@@ -34,3 +34,23 @@ self.addEventListener('fetch', (event) => {
   // Pass-through response; no caching, so nothing goes stale.
   event.respondWith(fetch(request));
 });
+
+// Focus (or open) the app when a system notification is clicked, and tell the
+// page which room it belongs to so it can navigate there.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const data = event.notification.data || {};
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        const client = clientList.find((c) => 'focus' in c);
+        if (client) {
+          client.postMessage({ type: 'edgechat:notification-click', data });
+          return client.focus();
+        }
+        return self.clients.openWindow('/');
+      }),
+  );
+});
