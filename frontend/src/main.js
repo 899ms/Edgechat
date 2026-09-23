@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { Capacitor } from '@capacitor/core';
 import App from './App.vue';
 import router from './router.js';
 import store from './store.js';
@@ -20,6 +21,17 @@ import './styles/chat-attachments.css';
 import './styles/chat-theme.css';
 import { initLiquidGlass } from './liquid-glass.js';
 import { initializeI18n } from './i18n.js';
+
+// 注册 Service Worker，使 Chrome/Edge 满足 PWA 可安装条件（地址栏安装按钮）。
+// 仅在浏览器支持且非 Capacitor 原生环境下注册。
+const isCapacitorNative = Capacitor.isNativePlatform();
+if ('serviceWorker' in navigator && !isCapacitorNative) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // 注册失败不影响应用功能，忽略即可。
+    });
+  });
+}
 
 // 应用自定义背景
 const customBg = localStorage.getItem('customBackground');
