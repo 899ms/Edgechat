@@ -21,10 +21,15 @@ import './styles/chat-attachments.css';
 import './styles/chat-theme.css';
 import { initLiquidGlass } from './liquid-glass.js';
 import { initializeI18n } from './i18n.js';
+import { parseNotificationRoomTarget, takeNotificationRoomTarget } from './notification-target.js';
+
+// 点击通知后新打开的窗口从 URL 恢复会话；登录后聊天页也能消费这个目标。
+const isCapacitorNative = Capacitor.isNativePlatform();
+const initialNotificationTarget = isCapacitorNative ? null : takeNotificationRoomTarget(window);
+if (initialNotificationTarget) queueNativeRoomTarget(initialNotificationTarget);
 
 // 注册 Service Worker，使 Chrome/Edge 满足 PWA 可安装条件（地址栏安装按钮）。
 // 仅在浏览器支持且非 Capacitor 原生环境下注册。
-const isCapacitorNative = Capacitor.isNativePlatform();
 if ('serviceWorker' in navigator && !isCapacitorNative) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {
@@ -36,10 +41,10 @@ if ('serviceWorker' in navigator && !isCapacitorNative) {
   navigator.serviceWorker.addEventListener('message', (event) => {
     const payload = event.data;
     if (payload?.type !== 'edgechat:notification-click') return;
-    const kind = payload.data?.roomKind;
-    const id = Number(payload.data?.roomId);
-    if (!kind || !Number.isFinite(id)) return;
-    queueNativeRoomTarget({ kind, id });
+    const target = parseNotificationRoomTarget(payload.data);
+    if (!target) return;
+    queueNativeRoomTarget(target);
+    void router.push('/');
   });
 }
 

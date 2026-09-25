@@ -22,8 +22,8 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
 
-  // Only same-origin static asset requests are eligible; everything else
-  // (API, uploads, cross-origin) falls through to the browser default.
+  // Same-origin GET requests, including page navigations, pass through here;
+  // API, uploads and cross-origin requests use the browser's default handling.
   if (url.origin !== self.location.origin) {
     return;
   }
@@ -50,7 +50,12 @@ self.addEventListener('notificationclick', (event) => {
           client.postMessage({ type: 'edgechat:notification-click', data });
           return client.focus();
         }
-        return self.clients.openWindow('/');
+        const url = new URL('/', self.location.origin);
+        if (data.roomKind && Number.isSafeInteger(Number(data.roomId)) && Number(data.roomId) > 0) {
+          url.searchParams.set('notificationRoomKind', data.roomKind);
+          url.searchParams.set('notificationRoomId', String(data.roomId));
+        }
+        return self.clients.openWindow(url.href);
       }),
   );
 });

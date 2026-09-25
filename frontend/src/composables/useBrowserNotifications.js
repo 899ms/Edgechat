@@ -209,10 +209,18 @@ export function useBrowserNotifications(options = {}) {
 		// Notification 构造函数更可靠（构造函数在部分 Chrome 独立窗口中
 		// 不会显示）。优先走 SW，失败或无 SW 时回退到构造函数。
 		const swContainer = browserWindow?.navigator?.serviceWorker;
-		if (swContainer?.ready) {
-			swContainer.ready
-				.then((registration) =>
-					registration.showNotification(title, {
+		if (typeof swContainer?.getRegistration === "function") {
+			// ready 在注册失败时可能永远不完成，不能让通知一直等待它。
+			void swContainer.getRegistration()
+				.then((registration) => {
+					if (
+						!registration?.active ||
+						new URL(registration.active.scriptURL).pathname !== "/sw.js"
+					) {
+						showFallbackNotification(title, body, tag, room);
+						return;
+					}
+					return registration.showNotification(title, {
 						body,
 						tag,
 						renotify: true,
@@ -220,8 +228,8 @@ export function useBrowserNotifications(options = {}) {
 							roomKind: room.kind,
 							roomId: Number(room.id),
 						},
-					}),
-				)
+					});
+				})
 				.catch(() => {
 					showFallbackNotification(title, body, tag, room);
 				});
