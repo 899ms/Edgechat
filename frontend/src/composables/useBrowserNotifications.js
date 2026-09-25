@@ -75,7 +75,9 @@ export function useBrowserNotifications(options = {}) {
 		if (nativeNotifications) {
 			return nativeNotifications.checkPermission().then((state) => {
 				permission.value = state;
-				if (state !== "granted" && enabled.value) {
+				// 仅在权限被明确拒绝时关闭开关；pending/prompt 状态不关闭，
+				// 避免在权限读取时序问题或待决状态下误关用户的开关。
+				if (state === "denied" && enabled.value) {
 					enabled.value = false;
 					persistPreferences();
 				}
@@ -86,7 +88,8 @@ export function useBrowserNotifications(options = {}) {
 		permission.value = supported.value
 			? notificationApi.permission
 			: "unsupported";
-		if (permission.value !== "granted" && enabled.value) {
+		// 同上：只在 denied 时关闭，default/prompt 不关闭。
+		if (permission.value === "denied" && enabled.value) {
 			enabled.value = false;
 			persistPreferences();
 		}
@@ -200,9 +203,42 @@ export function useBrowserNotifications(options = {}) {
 			return true;
 		}
 
+		const tag = `edgechat:${browserNotificationRoomKey(room)}`;
+
+		// PWA / standalone 模式下，Service Worker 的 showNotification 比
+		// Notification 构造函数更可靠（构造函数在部分 Chrome 独立窗口中
+		// 不会显示）。优先走 SW，失败或无 SW 时回退到构造函数。
+		const swContainer = browserWindow?.navigator?.serviceWorker;
+		if (swContainer?.ready) {
+			swContainer.ready
+				.then((registration) =>
+					registration.showNotification(title, {
+						body,
+						tag,
+						renotify: true,
+						data: {
+							roomKind: room.kind,
+							roomId: Number(room.id),
+						},
+					}),
+				)
+				.catch(() => {
+					showFallbackNotification(title, body, tag, room);
+				});
+			return true;
+		}
+
+		showFallbackNotification(title, body, tag, room);
+		return true;
+	}
+
+	function showFallbackNotification(title, body, tag, room) {
+		if (typeof notificationApi !== "function") {
+			return;
+		}
 		const notification = new notificationApi(title, {
 			body,
-			tag: `edgechat:${browserNotificationRoomKey(room)}`,
+			tag,
 			renotify: true,
 		});
 		notification.onclick = () => {
@@ -210,7 +246,6 @@ export function useBrowserNotifications(options = {}) {
 			options.onOpenRoom?.(room);
 			notification.close();
 		};
-		return true;
 	}
 
 	return {
